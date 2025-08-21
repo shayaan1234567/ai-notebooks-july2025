@@ -1,0 +1,20 @@
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.vectorstores import FAISS
+from langchain.text_splitter import CharacterTextSplitter
+from langchain.document_loaders import TextLoader
+
+#  Load sample document (replace with your own file)
+with open("rag_context.txt", "w") as f:
+    f.write("Poverty is a state or condition in which an individual lacks the financial resources and essentials for a basic standard of living. Poverty can have diverse environmental, legal, social, economic, and political causes and effects.[1] When evaluating poverty in statistics or economics there are two main measures: absolute poverty which compares income against the amount needed to meet basic personal needs, such as food, clothing, and shelter;[2] secondly, relative poverty measures when a person cannot meet a minimum level of living standards, compared to others in the same time and place. The definition of relative poverty varies from one country to another, or from one society to another.")
+
+loader = TextLoader("rag_context.txt")
+documents = loader.load()
+
+#  Split text
+text_splitter = CharacterTextSplitter(chunk_size=300, chunk_overlap=50)
+docs = text_splitter.split_documents(documents)
+
+#  Embeddings + FAISS Index
+embedding = OpenAIEmbeddings()
+db = FAISS.from_documents(docs, embedding)
+
